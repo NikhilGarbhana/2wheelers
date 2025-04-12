@@ -36,7 +36,7 @@ jobs:
           python kineticgreen_scraper.py
 
       - name: Upload CSV artifact
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: scraped-data
           path: |
