@@ -34,6 +34,10 @@ options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--start-maximized")
 options.add_argument("user-agent=Mozilla/5.0")
 
+import tempfile
+temp_profile = tempfile.mkdtemp()
+options.add_argument(f"--user-data-dir={temp_profile}")
+
 # # Optional: Disable image loading (better done via prefs)
 # prefs = {"profile.managed_default_content_settings.images": 2}
 # options.add_experimental_option("prefs", prefs)
