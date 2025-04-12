@@ -120,9 +120,9 @@ def main():
     driver, wait = start_browser()
     # print(cities)
     # print(len(cities))
-    cities_new = cities[:3]
+    
     # for city in cities:
-    for i, city in enumerate(cities_new):
+    for i, city in enumerate(cities):
         if i > 0 and i % RESTART_BROWSER_AFTER == 0:
             print("[INFO] Restarting browser to free memory...")
             driver.quit()
