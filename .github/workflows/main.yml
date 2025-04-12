@@ -1,37 +1,36 @@
-name: Web Scraping
+name: KineticGreen Web Scraper
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Schedule it to run once a day at midnight
-  workflow_dispatch:  # Trigger manually via the GitHub UI
+  workflow_dispatch:  # Manual trigger
 
 jobs:
-  webscraping:
+  scrape:
     runs-on: ubuntu-latest
-    
-    steps:
-    - name: Checkout repository
-      uses: actions/checkout@v2
-      
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.9'  # You can use a different Python version if needed
 
-    - name: Install dependencies
+    steps:
+    - name: Checkout repo
+      uses: actions/checkout@v3
+
+    - name: Install Chrome and ChromeDriver
       run: |
         sudo apt-get update
-        sudo apt-get install -y wget unzip
+        sudo apt-get install -y wget unzip curl
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
-        sudo dpkg -i google-chrome-stable_current_amd64.deb
-        sudo apt --fix-broken install -y
-        sudo apt-get install -y libx11-xcb1 libxcomposite1 libxrandr2 libglu1-mesa libxi6
-        CHROME_VERSION=$(google-chrome --version | sed 's/[^0-9.]//g' | cut -d. -f1) && \
-        wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION})/chromedriver_linux64.zip" && \
-        unzip /tmp/chromedriver.zip chromedriver -d /usr/bin/ && \
-        chmod +x /usr/bin/chromedriver
-        pip install -r requirements.txt  # Install Python dependencies
+        sudo dpkg -i google-chrome-stable_current_amd64.deb || sudo apt-get install -f -y
+        CHROME_VERSION=$(google-chrome --version | grep -oP '\d+' | head -1)
+        DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+        wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
+        unzip /tmp/chromedriver.zip -d /usr/local/bin/
+        chmod +x /usr/local/bin/chromedriver
 
-    - name: Run web scraping script
-      run: |
-        python3 test.py  # Replace with your script name
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run the scraping script
+      run: python3 test.py
+
+    - name: Upload output CSV
+      uses: actions/upload-artifact@v3
+      with:
+        name: kineticgreen_csv
+        path: kineticgreen.csv
