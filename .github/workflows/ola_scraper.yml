@@ -19,11 +19,14 @@ jobs:
 
       - name: Install dependencies
         run: |
+          cd ola
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Run script
-        run: python ola_scraper.py
+        run: |
+          cd ola
+          python ola_scraper.py
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
