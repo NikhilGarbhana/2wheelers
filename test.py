@@ -149,27 +149,5 @@ df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "City"]).d
 filename = f"kineticgreen_showrooms_{today}.csv"
 df.to_csv("kineticgreen.csv", index=False)
 
-import smtplib
-from email.message import EmailMessage
 
-EMAIL_SENDER = os.environ["EMAIL_SENDER"]
-EMAIL_PASSWORD = os.environ["EMAIL_PASSWORD"]
-EMAIL_RECEIVER = os.environ["EMAIL_RECEIVER"]
-
-def send_email_with_attachment():
-    msg = EmailMessage()
-    msg["Subject"] = "KineticGreen Dealership Data"
-    msg["From"] = EMAIL_SENDER
-    msg["To"] = EMAIL_RECEIVER
-    msg.set_content("CSV data is attached.")
-
-    with open("kineticgreen.csv", "rb") as f:
-        msg.add_attachment(f.read(), maintype="application", subtype="octet-stream", filename="kineticgreen.csv")
-
-    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as smtp:
-        smtp.login(EMAIL_SENDER, EMAIL_PASSWORD)
-        smtp.send_message(msg)
-        print("Email sent!")
-
-send_email_with_attachment()
 
