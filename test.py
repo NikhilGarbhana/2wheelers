@@ -2,12 +2,11 @@
 
 # Import required libraries
 from selenium import webdriver
-from selenium.webdriver.firefox.service import Service
+from selenium.webdriver.chrome.service import Service
+from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.keys import Keys
-from selenium.webdriver.firefox.options import Options
-# from webdriver_manager.firefox import GeckoDriverManager
 from selenium.webdriver.support.ui import Select
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.common.action_chains import ActionChains
@@ -26,20 +25,14 @@ import re
 
 # Setup Firefox WebDriver - Configure Selenium to use Firefox
 options = Options()
-# options.add_argument("--headless")  # Runs Firefox in headless mode
-options.add_argument("--disable-popup-blocking")  # Prevent pop-ups
-options.add_argument("--log-level=3")  # Suppresses most logs
+options.add_argument("--headless")  # Optional: run in headless mode
+options.add_argument("--disable-popup-blocking")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
-options.add_argument("--start-fullscreen")
-options.set_preference("permissions.default.image", 2)  # Disable images
-options.set_preference("dom.disable_open_during_load", True)  # Block popups
-options.set_preference("network.http.use-cache", False)  # Disable caching
-options.set_preference("general.useragent.override", "Mozilla/5.0")
-options.set_preference("geo.enabled", False)
-
-headers = {"User-Agent": "Mozilla/5.0"}
+options.add_argument("--start-maximized")
+options.add_argument("--disable-images")
+options.add_argument("user-agent=Mozilla/5.0")
 
 ###------------------ VARIABLES SECTION ------------------###
 
@@ -58,14 +51,12 @@ cities = [] # Save cities list here
 
 # Funtion to start a browser
 def start_browser():
-    """Starts a new browser session."""
-    driver = webdriver.Firefox(options=options)
+    """Starts a new Chrome browser session."""
+    driver = webdriver.Chrome(options=options)
     driver.maximize_window()
     wait = WebDriverWait(driver, WAIT_TIME, poll_frequency=0.5)
-
     driver.get(url)
-    time.sleep(2)  # Initial load wait
-    
+    time.sleep(2)
     return driver, wait
 
 # Function to scrape dealer details
