@@ -35,9 +35,6 @@ options.add_argument("--no-sandbox")
 options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--start-maximized")
 options.add_argument("user-agent=Mozilla/5.0")
-import uuid
-unique_profile = f"/tmp/chrome-profile-{uuid.uuid4()}"
-options.add_argument(f"--user-data-dir={unique_profile}")
 
 # # Optional: Disable image loading (better done via prefs)
 # prefs = {"profile.managed_default_content_settings.images": 2}
