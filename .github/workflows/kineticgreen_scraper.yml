@@ -21,28 +21,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Install Google Chrome
-        uses: browser-actions/setup-chrome@v1
-
-      - name: Get Chrome version (major only)
-        id: get_chrome_version
-        run: |
-          FULL_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+\.\d+')
-          echo "Full Chrome version: $FULL_VERSION"
-          MAJOR_VERSION=$(echo $FULL_VERSION | cut -d '.' -f 1)
-          echo "MAJOR_VERSION=$MAJOR_VERSION" >> $GITHUB_OUTPUT
-
-      - name: Download matching Chromedriver
-        run: |
-          MAJOR=${{ steps.get_chrome_version.outputs.MAJOR_VERSION }}
-          echo "Getting Chromedriver for major version: $MAJOR"
-          DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$MAJOR")
-          echo "Chromedriver version: $DRIVER_VERSION"
-          curl -s -o chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
-          unzip chromedriver.zip
-          chmod +x chromedriver
-          sudo mv chromedriver /usr/local/bin/
-
       - name: Run script
         run: python kineticgreen_scraper.py
 
