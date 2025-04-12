@@ -25,7 +25,7 @@ jobs:
         run: |
           sudo apt update
           python -m pip install --upgrade pip
-          pip install selenium pandas beautifulsoup4
+          pip install selenium pandas beautifulsoup4 requests
 
       - name: Run scraper script
         run: python test.py  # Rename this to your actual filename
