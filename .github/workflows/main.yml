@@ -32,5 +32,5 @@ jobs:
     - name: Upload output CSV
       uses: actions/upload-artifact@v3
       with:
-        name: kineticgreen_csv
+        name: kineticgreen-csv
         path: kineticgreen.csv
