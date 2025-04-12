@@ -55,7 +55,7 @@ cities = [] # Save cities list here
 # Funtion to start a browser
 def start_browser():
     """Starts a new browser session."""
-    driver = webdriver.Firefox(options=options)
+    driver = webdriver.Chrome(service=Service(), options=options)
     driver.maximize_window()
     wait = WebDriverWait(driver, WAIT_TIME, poll_frequency=0.5)
 
