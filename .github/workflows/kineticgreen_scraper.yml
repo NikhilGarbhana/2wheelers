@@ -1,7 +1,7 @@
 name: Run KineticGreen Scraper
 
 on:
-  workflow_dispatch:  # Allows manual trigger
+  workflow_dispatch:
 
 jobs:
   run-scraper:
@@ -21,19 +21,28 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Setup Google Chrome
+      - name: Install Google Chrome
         uses: browser-actions/setup-chrome@v1
 
-      - name: Setup Chromedriver
-        uses: nanasess/setup-chromedriver@v2
-        with:
-          chromedriver-version: latest
+      - name: Get Chrome version
+        id: get_chrome_version
+        run: |
+          CHROME_VERSION=$(google-chrome --version | grep -oP '\d+\.\d+\.\d+' | head -1)
+          echo "CHROME_VERSION=$CHROME_VERSION" >> $GITHUB_OUTPUT
+
+      - name: Download matching Chromedriver
+        run: |
+          CHROME_VERSION=${{ steps.get_chrome_version.outputs.CHROME_VERSION }}
+          echo "Detected Chrome version: $CHROME_VERSION"
+          DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE_$CHROME_VERSION")
+          echo "Matching Chromedriver version: $DRIVER_VERSION"
+          curl -s -o chromedriver.zip "https://chromedriver.storage.googleapis.com/${DRIVER_VERSION}/chromedriver_linux64.zip"
+          unzip chromedriver.zip
+          chmod +x chromedriver
+          sudo mv chromedriver /usr/local/bin/
 
       - name: Run script
-        env:
-          PATH: /usr/local/share/chrome-driver:$PATH
-        run: |
-          python kineticgreen_scraper.py
+        run: python kineticgreen_scraper.py
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
