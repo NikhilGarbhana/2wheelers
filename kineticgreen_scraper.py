@@ -147,7 +147,7 @@ def main():
                     print(f"❌ Skipping {city} after {MAX_RETRIES} retries")
                 
     driver.quit()
-
+main()
 ###------------------ DATA SAVING SECTION ------------------###
 
 df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "City"]).drop_duplicates()
