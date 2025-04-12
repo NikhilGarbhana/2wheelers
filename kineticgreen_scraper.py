@@ -151,5 +151,5 @@ main()
 ###------------------ DATA SAVING SECTION ------------------###
 
 df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "City"]).drop_duplicates()
-filename = f"kineticgreen_showrooms_new_{today}.csv"
+filename = f"kineticgreen_showrooms_{today}.csv"
 df.to_csv(filename, index=False)
