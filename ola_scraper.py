@@ -36,10 +36,6 @@ options.add_argument("--disable-dev-shm-usage")
 options.add_argument("--start-maximized")
 options.add_argument("user-agent=Mozilla/5.0")
 
- # 👇 Create a uniquely named user-data-dir for each session
-unique_profile_dir = tempfile.mkdtemp(prefix=f"profile-{uuid.uuid4()}-")
-options.add_argument(f"--user-data-dir={unique_profile_dir}")
-
 # # Optional: Disable image loading (better done via prefs)
 # prefs = {"profile.managed_default_content_settings.images": 2}
 # options.add_experimental_option("prefs", prefs)
