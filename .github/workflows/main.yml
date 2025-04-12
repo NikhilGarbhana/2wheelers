@@ -25,7 +25,7 @@ jobs:
         wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
         sudo dpkg -i google-chrome-stable_current_amd64.deb
         sudo apt --fix-broken install -y
-        sudo apt-get install -y libx11-xcb1 libxcomposite1 libxrandr2 libglu1-mesa libxi6 libgconf-2-4
+        sudo apt-get install -y libx11-xcb1 libxcomposite1 libxrandr2 libglu1-mesa libxi6
         CHROME_VERSION=$(google-chrome --version | sed 's/[^0-9.]//g' | cut -d. -f1) && \
         wget -O /tmp/chromedriver.zip "https://chromedriver.storage.googleapis.com/$(curl -s https://chromedriver.storage.googleapis.com/LATEST_RELEASE_${CHROME_VERSION})/chromedriver_linux64.zip" && \
         unzip /tmp/chromedriver.zip chromedriver -d /usr/bin/ && \
