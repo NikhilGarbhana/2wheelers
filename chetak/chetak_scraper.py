@@ -130,8 +130,8 @@ def main():
                 # Perform the search
                 search(city, driver, wait)
                 time.sleep(3)
-                # dealers = scrape_dealers(city, driver)
-                # data.extend(dealers)
+                dealers = scrape_dealers(city, driver)
+                data.extend(dealers)
                 print(f"✅ Success: {city}")
                 break
             except Exception as e:
