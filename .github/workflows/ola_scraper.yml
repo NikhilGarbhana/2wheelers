@@ -33,4 +33,5 @@ jobs:
         with:
           name: scraped-data
           path: |
+            cd ola
             ola_showrooms_*.csv
