@@ -1,5 +1,5 @@
 
-name: Run OLA Scraper
+name: Run CHETAK Scraper
 
 on:
   workflow_dispatch:
