@@ -25,12 +25,10 @@ jobs:
       - name: Run script
         run: |
           cd chetak
-          python chetak_scraper.py
+          python chetak.py
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
         with:
           name: scraped-data
-          path: |
-            cd chetak
-            chetak_showrooms_*.csv
+          path: chetak/chetak_showrooms_*.csv
