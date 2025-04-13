@@ -32,4 +32,5 @@ jobs:
         with:
           name: scraped-data
           path: |
+            cd kineticgreen
             kineticgreen_showrooms_*.csv
