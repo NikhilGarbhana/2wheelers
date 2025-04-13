@@ -1,5 +1,4 @@
-
-name: Run CHETAK Scraper
+name: Run Chetak Scraper
 
 on:
   workflow_dispatch:
@@ -26,7 +25,7 @@ jobs:
       - name: Run script
         run: |
           cd chetak
-          python chetak_scraper.py
+          python kineticgreen_scraper.py
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
