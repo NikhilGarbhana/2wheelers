@@ -25,7 +25,7 @@ jobs:
       - name: Run script
         run: |
           cd chetak
-          python chetak.py
+          python chetak_scraper.py
 
       - name: Upload CSV artifact
         uses: actions/upload-artifact@v4
