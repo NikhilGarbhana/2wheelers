@@ -173,3 +173,11 @@ def main():
                     if retry_count_city == MAX_RETRIES:
                         # print(f"⏩ Skipping {option_city} due to multiple failures.")
                         break
+    driver.quit()
+
+if __name__ == "__main__":
+    main()
+    ###------------------ DATA SAVING SECTION ------------------###
+    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "Mail"]).drop_duplicates()
+    filename = f"tvs_showrooms_{today}.csv"
+    df.to_csv(filename, index=False)
