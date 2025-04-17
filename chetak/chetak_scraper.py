@@ -62,7 +62,7 @@ def start_browser():
     """Starts a new browser session."""
     driver = webdriver.Chrome(service=Service(), options=options)
     driver.maximize_window()
-    wait = WebDriverWait(driver, WAIT_TIME, poll_frequency=0.5)
+    wait = WebDriverWait(driver, WAIT_TIME, poll_frequency=1)
 
     driver.get(url)
     time.sleep(2)  # Initial load wait
@@ -118,11 +118,11 @@ def main():
 
     # for city in cities:
     for i, city in enumerate(cities):
-        if i > 0 and i % RESTART_BROWSER_AFTER == 0:
-            print("[INFO] Restarting browser to free memory...")
-            driver.quit()
-            # time.sleep(5)
-            driver, wait = start_browser()
+        # if i > 0 and i % RESTART_BROWSER_AFTER == 0:
+        #     print("[INFO] Restarting browser to free memory...")
+        #     driver.quit()
+        #     # time.sleep(5)
+        #     driver, wait = start_browser()
         
         retry_count = 0
         while retry_count < MAX_RETRIES:
