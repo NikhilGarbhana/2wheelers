@@ -126,6 +126,13 @@ def scrape_dealers(driver, wait, state, city):
 
 # Function to select state and city
 def select_state_city(driver, wait):
+    # Wait until the element is present
+    target_element = WebDriverWait(driver, 10).until(
+        EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]"))
+    )
+    
+    # Scroll to the element using JavaScript
+    driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
     # Wait until the dropdown is present
     wait.until(EC.presence_of_element_located((By.ID, "OutletState")))
 
