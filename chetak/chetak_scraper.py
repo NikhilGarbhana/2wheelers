@@ -82,12 +82,13 @@ def scrape_dealers(city, driver):
         for showroom in showrooms:
             name = showroom.find("h4").text
             address = showroom.find("p").text
-            phone = showroom.find("a", class_="dealer-location-card__phone")["aria-label"]
+            email = showroom.find("a", class_="dealer-location-card__email").text
+            phone = showroom.find("a", class_="dealer-location-card__phone").text
             # print(name)
             # print(address)
             # print(phone)
 
-            dealers.append([name if name else "", address if address else "", phone if phone else "", city])
+            dealers.append([name if name else "", address if address else "", email if email else "", phone if phone else "", city])
             
     return dealers
 
@@ -130,6 +131,8 @@ def main():
                 # Perform the search
                 search(city, driver, wait)
                 time.sleep(3)
+                wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="dealerLocatorMap"]/div/div/div/div[1]/div/div[1]/div[2]/div')))
+                
                 dealers = scrape_dealers(city, driver)
                 data.extend(dealers)
                 print(f"✅ Success: {city}")
@@ -148,6 +151,7 @@ def main():
 if __name__ == "__main__":
     main()
     ###------------------ DATA SAVING SECTION ------------------###
-    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "City"]).drop_duplicates()
+    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Email", "Phone", "City"]).drop_duplicates()
+    
     filename = f"chetak_showrooms_{today}.csv"
     df.to_csv(filename, index=False)
