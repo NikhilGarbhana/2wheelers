@@ -134,7 +134,7 @@ def select_state_city(driver, wait):
     
             city = city_option.get_attribute("value")
     
-            if not city:
+            if not city or city_value == "-- City -- ":
                 continue
             print("Selecting city:", city_value)
             city_dropdown.select_by_value(city)
