@@ -105,7 +105,7 @@ def select_state_city(driver, wait):
     
     # Get the Select object from the state dropdown
     state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "state"))))
-    for index in range(len(state_dropdown.options)):
+    for index in range(1, len(state_dropdown.options)):
         retry_count = 0
         # Re-fetch the dropdown and its options on every iteration
         state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "state"))))
@@ -114,7 +114,7 @@ def select_state_city(driver, wait):
         state_value = state_option.text
 
         state = state_option.get_attribute("value")
-        if not state or state_value != "-- State --":
+        if not state:
             continue
         print("Selecting state:", state_value)
         state_dropdown.select_by_value(state)
@@ -124,7 +124,7 @@ def select_state_city(driver, wait):
 
         # Get the Select object from the city dropdown
         city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "city"))))
-        for index in range(len(city_dropdown.options)):
+        for index in range(1, len(city_dropdown.options)):
             retry_count = 0
             # Re-fetch the dropdown and its options on every iteration
             city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "city"))))
@@ -134,7 +134,7 @@ def select_state_city(driver, wait):
     
             city = city_option.get_attribute("value")
     
-            if not city or city_value != "-- City -- ":
+            if not city:
                 continue
             print("Selecting city:", city_value)
             city_dropdown.select_by_value(city)
