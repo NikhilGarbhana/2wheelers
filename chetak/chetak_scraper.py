@@ -14,6 +14,7 @@ from selenium.common.exceptions import UnexpectedAlertPresentException, TimeoutE
 from selenium.webdriver.common.alert import Alert
 
 import pandas as pd
+import numpy as mp
 import time
 import csv
 import requests
