@@ -135,6 +135,7 @@ def main():
                                 search_button = driver.find_element(By.XPATH, '//*[@id="OutletStoreLocatorSearchForm"]/div/div[2]/div[2]/input')
                                 search_button.click()
                                 dealers = scrape_dealers(driver, state_name, city_name)
+                                print(dealers)
                                 data.extend(dealers)
                                 break
                             except (StaleElementReferenceException, TimeoutException):
