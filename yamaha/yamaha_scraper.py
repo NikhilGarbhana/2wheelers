@@ -100,13 +100,11 @@ def scrape_dealers(driver, wait, state, city):
     
 # Function to select state and city
 def select_state_city(driver, wait):
-    print("1")
     type_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "type"))))
     type_dropdown.select_by_value("sales")
-    print("2")
     # Get the Select object from the state dropdown
     state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "state"))))
-    for index in range(1, len(state_dropdown.options)):
+    for index in range(len(state_dropdown.options)):
         retry_count = 0
         # Re-fetch the dropdown and its options on every iteration
         state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "state"))))
@@ -125,7 +123,7 @@ def select_state_city(driver, wait):
 
         # Get the Select object from the city dropdown
         city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "city"))))
-        for index in range(1, len(city_dropdown.options)):
+        for index in range(len(city_dropdown.options)):
             retry_count = 0
             # Re-fetch the dropdown and its options on every iteration
             city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "city"))))
