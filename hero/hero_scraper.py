@@ -48,9 +48,15 @@ def start_browser():
     return driver
 
 
-# Wait for an element to be present
-def wait_for_element(driver, by, value, timeout=WAIT_TIME):
-    return WebDriverWait(driver, timeout).until(EC.presence_of_element_located((by, value)))
+def wait_for_element(driver, by, value, timeout=20):
+    """Wait for an element to be visible on the page."""
+    try:
+        print(f"Waiting for element {by}='{value}' for up to {timeout} seconds...")
+        return WebDriverWait(driver, timeout).until(EC.visibility_of_element_located((by, value)))
+    except TimeoutException:
+        driver.save_screenshot("element_wait_timeout.png")
+        print(f"[TimeoutException] Could not find visible element by {by}='{value}'")
+        raise
 
 # Scrape dealer information
 def scrape_dealers(driver, state_name, city_name):
@@ -83,7 +89,7 @@ def scrape_dealers(driver, state_name, city_name):
         except NoSuchElementException:
             break
     return dealers
-
+        
 # Main scraping function
 def main():
     driver = start_browser()
