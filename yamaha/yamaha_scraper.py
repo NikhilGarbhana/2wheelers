@@ -100,12 +100,14 @@ def scrape_dealers(driver, wait, state, city):
     
 # Function to select state and city
 def select_state_city(driver, wait):
-    type_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "type"))))
-    type_dropdown.select_by_value("sales")
-    # Get the Select object from the state dropdown
-    state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "state"))))
-    for index in range(len(state_dropdown.options)):
-        retry_count = 0
+  type_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "type"))))
+  type_dropdown.select_by_value("sales")
+  # Get the Select object from the state dropdown
+  state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "state"))))
+  for index in range(len(state_dropdown.options)):
+    retry_count = 0
+    while retry_count < MAX_RETRIES:
+      try:
         # Re-fetch the dropdown and its options on every iteration
         state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "state"))))
         state_option = state_dropdown.options[index]
@@ -115,6 +117,8 @@ def select_state_city(driver, wait):
         state = state_option.get_attribute("value")
         if not state:
             continue
+        if state_value == "-- State --":
+            break
         print("Selecting state:", state_value)
         state_dropdown.select_by_value(state)
 
@@ -124,25 +128,36 @@ def select_state_city(driver, wait):
         # Get the Select object from the city dropdown
         city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "city"))))
         for index in range(len(city_dropdown.options)):
-            retry_count = 0
-            # Re-fetch the dropdown and its options on every iteration
-            city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "city"))))
-    
-            city_option = city_dropdown.options[index]
-            city_value = city_option.text
-    
-            city = city_option.get_attribute("value")
-    
-            if not city:
-                continue
-            print("Selecting city:", city_value)
-            city_dropdown.select_by_value(city)
-    
-            # wait or do actions here
-            time.sleep(3)  # Or use a better WebDriverWait
-
-            dealers = scrape_dealers(driver, wait, state_value, city_value)
-            data.extend(dealers)
+          retry_count_city = 0
+          while retry_count_city < MAX_RETRIES:
+            try:
+              # Re-fetch the dropdown and its options on every iteration
+              city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "city"))))
+      
+              city_option = city_dropdown.options[index]
+              city_value = city_option.text
+      
+              city = city_option.get_attribute("value")
+      
+              if not city:
+                  continue
+              print("Selecting city:", city_value)
+              city_dropdown.select_by_value(city)
+      
+              # wait or do actions here
+              time.sleep(3)  # Or use a better WebDriverWait
+  
+              dealers = scrape_dealers(driver, wait, state_value, city_value)
+              data.extend(dealers)
+              break
+            except:
+              retry_count_city += 1
+              if retry_count_city == MAX_RETRIES:
+                break
+      except:
+        retry_count += 1
+        if retry_count == MAX_RETRIES:
+          break
     
 # Function to run the process step by step
 def main():
