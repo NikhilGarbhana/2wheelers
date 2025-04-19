@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 from datetime import datetime
 
 # Configuration
-HEADLESS = False  # Set to True to run in headless mode
+HEADLESS = True  # Set to True to run in headless mode
 WAIT_TIME = 10
 MAX_RETRIES = 3
 URL = "https://dealers.heromotocorp.com/"
