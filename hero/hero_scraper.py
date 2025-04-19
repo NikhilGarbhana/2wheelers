@@ -96,11 +96,14 @@ def main():
     data = []
     try:
         # Wait for state dropdown to load
-        wait_for_element(driver, By.ID, "OutletState")
+        ele = wait_for_element(driver, By.ID, "OutletState")
+        driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", ele)
         state_dropdown = Select(driver.find_element(By.ID, "OutletState"))
         for state_index in range(1, len(state_dropdown.options)):
             for attempt in range(MAX_RETRIES):
                 try:
+                    ele = wait_for_element(driver, By.ID, "OutletState")
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", ele)
                     state_dropdown = Select(driver.find_element(By.ID, "OutletState"))
                     state_option = state_dropdown.options[state_index]
                     state_value = state_option.get_attribute("value")
@@ -111,11 +114,15 @@ def main():
                     time.sleep(2)  # Wait for city dropdown to load
 
                     # Wait for city dropdown to load
-                    wait_for_element(driver, By.ID, "OutletCity")
+                    # wait_for_element(driver, By.ID, "OutletCity")
+                    ele_city = wait_for_element(driver, By.ID, "OutletCity")
+                    driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", ele_city)
                     city_dropdown = Select(driver.find_element(By.ID, "OutletCity"))
                     for city_index in range(1, len(city_dropdown.options)):
                         for city_attempt in range(MAX_RETRIES):
                             try:
+                                ele_city = wait_for_element(driver, By.ID, "OutletCity")
+                                driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", ele_city)
                                 city_dropdown = Select(driver.find_element(By.ID, "OutletCity"))
                                 city_option = city_dropdown.options[city_index]
                                 city_value = city_option.get_attribute("value")
