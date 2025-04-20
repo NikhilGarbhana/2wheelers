@@ -37,12 +37,12 @@ options.add_argument("user-agent=Mozilla/5.0")
 # prefs = {"profile.managed_default_content_settings.images": 2}
 # options.add_experimental_option("prefs", prefs)
 
-prefs = {
-  "profile.managed_default_content_settings.images": 2,
-  "profile.default_content_setting_values.notifications": 2,
-  "profile.default_content_setting_values.geolocation": 2
-}
-options.add_experimental_option("prefs", prefs)
+# prefs = {
+#   "profile.managed_default_content_settings.images": 2,
+#   "profile.default_content_setting_values.notifications": 2,
+#   "profile.default_content_setting_values.geolocation": 2
+# }
+# options.add_experimental_option("prefs", prefs)
 
 ###------------------ VARIABLES SECTION ------------------###
 
