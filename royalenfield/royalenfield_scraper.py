@@ -155,7 +155,7 @@ def main():
 if __name__ == "__main__":
     main()
     
-    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "City", "State"]).drop_duplicates()
+    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "Email", "City", "State"]).drop_duplicates()
         
     # Save updated file
     filename = f"royalenfield_showrooms_{today}.csv"
