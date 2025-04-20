@@ -74,6 +74,42 @@ def start_browser():
     
     return driver, wait
 
+# Function to scrape the showrooms from particular city
+def scrape_dealers(driver, wait, city, state):
+    dealers = []
+    while True:
+        page_source = driver.page_source
+        soup = BeautifulSoup(page_source, "html.parser")
+        
+        container = soup.find("div", class_="outlet-list")
+        showroom_list = container.find_all("div", class_="store-info-box")
+        if showroom_list:
+            for showroom in showroom_list:
+                name = showroom.find("li", class_="outlet-name").text.strip()
+                address = showroom.find("li", class_="outlet-address").text.strip()
+                phone = showroom.find("li", class_="outlet-phone").text.strip()
+                print([name if name else "", address if address else "", phone if phone else "", city, state])
+                dealers.append([name if name else "", address if address else "", phone if phone else "", city, state])
+                
+        # Check for "Next" button
+        try:
+            next_button = WebDriverWait(driver, 3).until(EC.element_to_be_clickable((By.XPATH, "//a[contains(text(), 'Next')]")))
+
+            # Check if it's disabled or not present
+            if 'disabled' in next_button.get_attribute("class").lower():
+                break
+
+            # Scroll to and click the next button
+            driver.execute_script("arguments[0].scrollIntoView({block: 'center'});", next_button)
+            time.sleep(1)
+            next_button.click()
+            time.sleep(2)  # Give it time to load new content
+
+        except Exception as e:
+            print("No more pages or error while clicking next")
+            break
+    return dealers
+    
 # Function to select state and city
 def select_state_city(driver, wait):
     while True:
@@ -82,7 +118,7 @@ def select_state_city(driver, wait):
         
         # Scroll to the element using JavaScript
         driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
-      
+        
         # Get the Select object from the state dropdown
         state_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletState")))
         state_dropdown = Select(state_dropdown_ele)
@@ -90,14 +126,27 @@ def select_state_city(driver, wait):
         if len(state_dropdown.options)>1:
             break
             
-    for state in state_dropdown.options:
-        state_value = state.get_attribute("value")
+    # for state in state_dropdown.options):
+    for index in range(len(state_dropdown.options)):
+        
+        # Wait until the element is present
+        target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
+        
+        # Scroll to the element using JavaScript
+        driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
+
+        # Get the Select object from the state dropdown
+        state_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletState")))
+        state_dropdown = Select(state_dropdown_ele)
+        
+        state_value = state_dropdown.options[index].get_attribute("value")
         if state_value == '':
             continue
         state_dropdown.select_by_value(state_value)
-        print(state.text)
+        print(state_dropdown.options[index].text)
 
         while True:
+            
             # Get the Select object from the state dropdown
             city_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletCity")))
             city_dropdown = Select(city_dropdown_ele)
@@ -105,12 +154,38 @@ def select_state_city(driver, wait):
             if len(city_dropdown.options)>1:
                 break
                 
-        for city in city_dropdown.options:
-            city_value = city.get_attribute("value")
+        # for city in city_dropdown.options:
+        for index in range(len(city_dropdown.options)):
+            
+            # Wait until the element is present
+            target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
+            
+            # Scroll to the element using JavaScript
+            driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
+
+            # Get the Select object from the state dropdown
+            city_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletCity")))
+            city_dropdown = Select(city_dropdown_ele)
+            
+            city_value = city_dropdown.options[index].get_attribute("value")
             if city_value == '':
                 continue
             city_dropdown.select_by_value(city_value)
-            print(city.text)
+            print(city_dropdown.options[index].text)
+            # driver.execute_script("window.scrollTo(0,500);")
+            submit = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="OutletStoreLocatorSearchForm"]/div/div[2]/div[2]/input')))
+            submit.click()
+            time.sleep(3)
+            
+            # Wait until the element is present
+            
+            # target_container = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[3]/div")))
+            
+            # # Scroll to the element using JavaScript
+            # driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_container)
+            
+            dealers = scrape_dealers(driver, wait, city_value, state_value)
+            data.extend(dealers)
         
     
 # Function to run the process step by step
@@ -123,3 +198,10 @@ def main():
     
 if __name__ == "__main__":
     main()
+    
+    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "City", "State"]).drop_duplicates()
+        
+    # Save updated file
+    filename = f"hero_showrooms_{today}.csv"
+    df.to_csv(filename, index=False)
+    print(f"Done! ✅ Updated DataFrame saved as {filename}")
