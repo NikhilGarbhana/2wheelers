@@ -77,6 +77,14 @@ def start_browser():
 # Function to select state and city
 def select_state_city(driver, wait):
     while True:
+        # Wait until the element is present
+        target_element = WebDriverWait(driver, 10).until(
+            EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]"))
+        )
+        
+        # Scroll to the element using JavaScript
+        driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
+      
         # Get the Select object from the state dropdown
         state_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletState")))
         state_dropdown = Select(state_dropdown_ele)
