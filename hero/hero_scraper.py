@@ -114,7 +114,8 @@ def scrape_dealers(driver, wait, city, state):
 def select_state_city(driver, wait):
     while True:
         # Wait until the element is present
-        target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
+        # target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
+        target_element = driver.find_element(By.XPATH, "/html/body/section[2]/div[2]")
         
         # Scroll to the element using JavaScript
         driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
