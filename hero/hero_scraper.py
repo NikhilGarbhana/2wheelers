@@ -127,7 +127,7 @@ def select_state_city(driver, wait):
             break
             
     # for state in state_dropdown.options):
-    for index in range(len(state_dropdown.options)):
+    for index in range(len(state_dropdown.options[:3])):
         
         # Wait until the element is present
         target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
@@ -199,7 +199,7 @@ def main():
 if __name__ == "__main__":
     main()
     
-    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "City", "State"]).drop_duplicates()
+    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "City", "State"]).drop_duplicates()
         
     # Save updated file
     filename = f"hero_showrooms_{today}.csv"
