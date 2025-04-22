@@ -121,7 +121,7 @@ def select_state_city(driver, wait):
             # Scroll to the element using JavaScript
             driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
             
-            Get the Select object from the state dropdown
+            # Get the Select object from the state dropdown
             state_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletState")))
             state_dropdown = Select(state_dropdown_ele)
     
