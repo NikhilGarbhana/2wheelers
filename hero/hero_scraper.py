@@ -148,7 +148,8 @@ def select_state_city(driver, wait):
         if state_value == '':
             continue
         state_dropdown.select_by_value(state_value)
-        print(state_dropdown.options[index].text)
+        state_name = state_dropdown.options[index].text
+        print(state_name)
 
         while True:
             
@@ -176,7 +177,8 @@ def select_state_city(driver, wait):
             if city_value == '':
                 continue
             city_dropdown.select_by_value(city_value)
-            print(city_dropdown.options[index].text)
+            city_name = city_dropdown.options[index].text
+            print(city_name)
             # driver.execute_script("window.scrollTo(0,500);")
             submit = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="OutletStoreLocatorSearchForm"]/div/div[2]/div[2]/input')))
             submit.click()
@@ -189,7 +191,7 @@ def select_state_city(driver, wait):
             # # Scroll to the element using JavaScript
             # driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_container)
             
-            dealers = scrape_dealers(driver, wait, city_value, state_value)
+            dealers = scrape_dealers(driver, wait, city_name, state_name)
             data.extend(dealers)
         
     
