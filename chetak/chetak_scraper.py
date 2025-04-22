@@ -45,6 +45,7 @@ options.add_experimental_option("prefs", prefs)
 today = datetime.today().strftime("%d-%m-%Y")
 
 url = "https://www.chetak.com/#locate-dealer"
+url_cities = "https://online.chetak.com/?Brand=Chetak"
 
 # Store showroom data"
 data = []
