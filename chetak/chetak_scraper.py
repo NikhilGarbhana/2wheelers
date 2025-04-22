@@ -83,7 +83,8 @@ def cities():
     # Wait for dropdown to be present
     wait = WebDriverWait(driver, 20)
 
-    while True:
+    retry_count = 0
+    while retry_count<MAX_RETRIES:
         try:
             # Get all dropdowns by role (they appear in order: 0=Sort, 1=State, 2=City)
             dropdowns = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//div[@role='button' and @aria-haspopup='listbox']")))
@@ -100,6 +101,7 @@ def cities():
             state_values = [i.get_attribute("data-value") for i in state_options]
             break
         except:
+            retry_count += 1
             time.sleep(5)
 
     for state_value in state_values:
