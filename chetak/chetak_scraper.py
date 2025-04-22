@@ -83,19 +83,24 @@ def cities():
     # Wait for dropdown to be present
     wait = WebDriverWait(driver, 20)
 
-    # Get all dropdowns by role (they appear in order: 0=Sort, 1=State, 2=City)
-    dropdowns = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//div[@role='button' and @aria-haspopup='listbox']")))
-    
-    state_dropdown = dropdowns[1]  # Second dropdown = state
-    city_dropdown = dropdowns[2]   # Third dropdown = city
-    # Step 1: Open state dropdown
-    state_dropdown.click()
-    # time.sleep(2)
-    
-    # Step 2: Get all state options
-    state_options = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@role='listbox']//li")))
-    state_options[0].click()
-    state_values = [i.get_attribute("data-value") for i in state_options]
+    while True:
+        try:
+            # Get all dropdowns by role (they appear in order: 0=Sort, 1=State, 2=City)
+            dropdowns = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//div[@role='button' and @aria-haspopup='listbox']")))
+            
+            state_dropdown = dropdowns[1]  # Second dropdown = state
+            city_dropdown = dropdowns[2]   # Third dropdown = city
+            # Step 1: Open state dropdown
+            state_dropdown.click()
+            # time.sleep(2)
+            
+            # Step 2: Get all state options
+            state_options = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//ul[@role='listbox']//li")))
+            state_options[0].click()
+            state_values = [i.get_attribute("data-value") for i in state_options]
+            break
+        except:
+            time.sleep(5)
 
     for state_value in state_values:
         city_url = f"https://online.chetak.com/?Brand=Chetak&state={state_value}"
