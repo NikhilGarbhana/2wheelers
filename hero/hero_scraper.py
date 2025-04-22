@@ -113,23 +113,23 @@ def scrape_dealers(driver, wait, city, state):
 # Function to select state and city
 def select_state_city(driver, wait):
     while True:
-        try:
-            # Wait until the element is present
-            # target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
-            target_element = driver.find_element(By.XPATH, "/html/body/section[2]/div[2]")
-            
-            # Scroll to the element using JavaScript
-            driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
-            
-            # Get the Select object from the state dropdown
-            state_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletState")))
-            state_dropdown = Select(state_dropdown_ele)
-    
-            if len(state_dropdown.options)>1:
-                break
-        except:
-            driver.refresh()
-            time.sleep(10)
+        # try:
+        # Wait until the element is present
+        # target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
+        target_element = driver.find_element(By.XPATH, "/html/body/section[2]/div[2]")
+        
+        # Scroll to the element using JavaScript
+        driver.execute_script("arguments[0].scrollIntoView({ behavior: 'smooth', block: 'center' });", target_element)
+        
+        # Get the Select object from the state dropdown
+        state_dropdown_ele = wait.until(EC.presence_of_element_located((By.ID, "OutletState")))
+        state_dropdown = Select(state_dropdown_ele)
+
+        if len(state_dropdown.options)>1:
+            break
+        # except:
+        #     driver.refresh()
+        #     time.sleep(10)
     
     # for state in state_dropdown.options):
     for index in range(len(state_dropdown.options[:3])):
