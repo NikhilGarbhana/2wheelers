@@ -132,7 +132,7 @@ def select_state_city(driver, wait):
         #     time.sleep(10)
     
     # for state in state_dropdown.options):
-    for index in range(len(state_dropdown.options[:3])):
+    for index in range(len(state_dropdown.options)):
         
         # Wait until the element is present
         target_element = WebDriverWait(driver, 20).until(EC.presence_of_element_located((By.XPATH, "/html/body/section[2]/div[2]")))
