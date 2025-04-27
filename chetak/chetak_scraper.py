@@ -121,8 +121,8 @@ def search(city, driver, wait):
     time.sleep(5)
 
 def get_state_from_nominatim_cached(address):
-    if address in nominatim_cache:
-        return nominatim_cache[address]
+    # if address in nominatim_cache:
+    #     return nominatim_cache[address]
     
     url = 'https://nominatim.openstreetmap.org/search'
     params = {
@@ -137,16 +137,22 @@ def get_state_from_nominatim_cached(address):
         response.raise_for_status()
         data = response.json()
         if data and data[0]['address'].get('country_code', 'Unknown')=='in':
+            city = data[0]['address'].get('county', 'Unknown')
+            district = data[0]['address'].get('state_district', 'Unknown')
             state = data[0]['address'].get('state', 'Unknown')
         else:
+            city = 'Unknown'
+            district = 'Unknown'
             state = 'Unknown'
     except requests.RequestException as e:
         print(f"Error fetching state for address: {address} | Error: {e}")
+        city = 'Unknown'
+        district = 'Unknown'
         state = 'Unknown'
 
     # Save to cache
-    nominatim_cache[address] = state
-    return state
+    # nominatim_cache[address] = city, district, state
+    return city, district, state
     
 # Function to run the process step by step
 def main():
@@ -191,16 +197,26 @@ if __name__ == "__main__":
     # Drop empty showroom names
     df['Showroom Name'] = df['Showroom Name'].replace('', np.nan)
     df = df.dropna(subset=['Showroom Name'])
+    df['City'] = ''
+    df['District'] = ''
     df['State'] = ''
     
-    # Apply only to rows where State is still ''
+    # Apply only to rows where State is still 'Unknown'
     for idx, row in df[df['State'] == ''].iterrows():
         pincode = extract_pincode(row['Address'])
         if pincode:
-            state = get_state_from_nominatim_cached(pincode + ', India')
+            values = get_state_from_nominatim_cached(pincode + ', India')
+            city = values[0]
+            district = values[1]
+            state = values[2]
         else:
-            state = get_state_from_nominatim_cached(row['Address'] + ', India')
-            
+            values = get_state_from_nominatim_cached(row['Address'] + ', India')
+            city = values[0]
+            district = values[1]
+            state = values[2]
+    
+        df.at[idx, 'City'] = city
+        df.at[idx, 'District'] = district
         df.at[idx, 'State'] = state
         time.sleep(1)  # Respect Nominatim rate limit
         
