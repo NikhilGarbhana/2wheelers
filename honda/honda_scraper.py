@@ -49,11 +49,10 @@ options.add_experimental_option("prefs", prefs)
 
 today = datetime.today().strftime("%d-%m-%Y")
 
-url = "https://www.honda2wheelersindia.com/network/dealerLocator"
+url = "https://www.honda2wheelersindia.com/dealer-locator"
 
 # Store showroom data"
 data = []
-state_cities = {}
 
 # Constants
 MAX_RETRIES = 2  # Number of retries per pincode
@@ -81,86 +80,110 @@ def scrape_dealers(driver, wait, state, city):
     page_source = driver.page_source
     soup = BeautifulSoup(page_source, "html.parser")
     
-    container = soup.find("div", class_="col-md-12 col-xs-12 col-sm-12")
-    showroom_list = soup.find_all("div", class_="repeat-dealor")
+    container = soup.find("ol", class_="DealerLocator_dealerItems__BAUqC")
+    showroom_list = container.find_all("li", class_="DealerLocator_dealer__sO4Kv")
     for showroom in showroom_list:
-        values = showroom.find_all("div")
-        name = values[0].find("span").text.strip()
-        address = values[0].find("p").text.strip()
+
+        name = showroom.find("p", class_="DealerLocator_dealer__Name__IFmch").text.strip()
+        address = showroom.find("p", class_="DealerLocator_dealer__Address__TezsX").text.strip()
+        dealers.append([name if name else "", address if address else "", city, state])
+        print([name if name else "", address if address else "", city, state])
         
-        phone_icon = values[1].find("i", class_="fa fa-phone")
-        mobile_icon = values[1].find("i", class_="fa fa-mobile")
-        # email_icon = values[1].find("i", class_="fa fa-envelope")
-        
-        phone = phone_icon.next_sibling.text.replace('"','').strip()
-        mobile = mobile_icon.next_sibling.text.replace('"','').strip()
-        email = values[1].find("a").text.strip()
-        
-        dealers.append([name if name else "", address if address else "", phone if phone else "", mobile if mobile else "", email if email else "", city, state])
-        print([name if name else "", address if address else "", phone if phone else "", mobile if mobile else "", email if email else "", city, state])
     return dealers
     
 # Function to select state and city
 def select_state_city(driver, wait):
-
-    # # Wait until the dropdown is present
-    # wait.until(EC.presence_of_element_located((By.ID, "StateID")))
+    # Click to open the dropdown
+    state_drop_down = driver.find_element(By.XPATH, '//*[@id="content"]/div/div/div/div/div/div/div/div/section/div/div/div/div/div/div[1]/div')
+    state_drop_down.click()
+    time.sleep(1)  # Wait for dropdown to open
+ 
+    # Now get the container of options
+    state_drop_down_options = driver.find_element(By.CLASS_NAME, 'css-1nmdiq5-menu')
     
-    # Get the Select object from the state dropdown
-    state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "StateID"))))
-    for index in range(len(state_dropdown.options)):
-        retry_count = 0
-        # Re-fetch the dropdown and its options on every iteration
-        state_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "StateID"))))
+    # Then find all option elements inside the menu
+    options = state_drop_down_options.find_elements(By.CSS_SELECTOR, "div[class*='option']")
 
-        state_option = state_dropdown.options[index]
-        state_value = state_option.text
-
-        state = state_option.get_attribute("value")
-
-        if not state:
-            continue
-        print("Selecting state:", state_value)
-        state_dropdown.select_by_value(state)
-
-        # wait or do actions here (like triggering city loading, etc.)
-        time.sleep(2)  # Or use a better WebDriverWait
-
-        # Get the Select object from the city dropdown
-        city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "CityID"))))
-        for index in range(len(city_dropdown.options)):
-            retry_count = 0
-            # Re-fetch the dropdown and its options on every iteration
-            city_dropdown = Select(wait.until(EC.presence_of_element_located((By.ID, "CityID"))))
+    state_names = [option.text for option in options]
+    # state_names = state_names[:3]
+    # print(state_names)
     
-            city_option = city_dropdown.options[index]
-            city_value = city_option.text
+    for state in state_names:
+        try:
+            dropdown_inputs = driver.find_elements(By.XPATH, '//input[@role="combobox" and @aria-autocomplete="list"]')
     
-            city = city_option.get_attribute("value")
-    
-            if not city:
-                continue
-            print("Selecting city:", city_value)
-            city_dropdown.select_by_value(city)
-    
-            # wait or do actions here
-            time.sleep(2)  # Or use a better WebDriverWait
-            submit = wait.until(EC.presence_of_element_located((By.XPATH, '//*[@id="divDealer"]/form/div/div/div/div[4]/button[1]')))
-            submit.click()
-            time.sleep(3)
+            state_input = dropdown_inputs[0]
+            city_input = dropdown_inputs[1]
+            # Locate the input field using stable attributes
+            # state_input = driver.find_element(By.XPATH, '//input[@role="combobox" and @aria-autocomplete="list"]')
+            
+            # Focus the field
+            state_input.click()
+            time.sleep(0.5)
+        
+            # Clear the input (CTRL+A then BACKSPACE)
+            state_input.send_keys(Keys.CONTROL + "a")
+            state_input.send_keys(Keys.BACKSPACE)
+            time.sleep(0.5)
+        
+            # Type the new state name
+            state_input.send_keys(state)
+            time.sleep(1.5)  # Wait for the dropdown to show options
+        
+            # Move to the first option and select
+            state_input.send_keys(Keys.ARROW_DOWN)
+            state_input.send_keys(Keys.ENTER)
+            time.sleep(1)  # Wait for selection to complete
+            
+            # Click to open the dropdown
+            city_drop_down = driver.find_element(By.XPATH, '//*[@id="content"]/div/div/div/div/div/div/div/div/section/div/div/div/div/div/div[2]/div')
+            city_drop_down.click()
+            time.sleep(1)  # Wait for dropdown to open
+         
+            # Now get the container of options
+            city_drop_down_options = driver.find_element(By.CLASS_NAME, 'css-1nmdiq5-menu')
+            
+            # Then find all option elements inside the menu
+            city_options = city_drop_down_options.find_elements(By.CSS_SELECTOR, "div[class*='option']")
+        
+            city_names = [city_option.text for city_option in city_options]
+            # print(city_names)
+            for city in city_names:
+                # Focus the field
+                city_input.click()
+                time.sleep(0.5)
+            
+                # Clear the input (CTRL+A then BACKSPACE)
+                city_input.send_keys(Keys.CONTROL + "a")
+                city_input.send_keys(Keys.BACKSPACE)
+                time.sleep(0.5)
+            
+                # Type the new state name
+                city_input.send_keys(city)
+                time.sleep(1.5)  # Wait for the dropdown to show options
+            
+                # Move to the first option and select
+                city_input.send_keys(Keys.ARROW_DOWN)
+                city_input.send_keys(Keys.ENTER)
+                time.sleep(1)  # Wait for selection to complete
 
-            dealers = scrape_dealers(driver, wait, state_value, city_value)
-            data.extend(dealers)
-    
+                dealers = scrape_dealers(driver, wait, state, city)
+                data.extend(dealers)
+                
+        except:
+            pass
+
+
 # Function to run the process step by step
 def main():
     driver, wait = start_browser()
     select_state_city(driver, wait)
     driver.quit()
-
+    
 if __name__ == "__main__":
     main()
-    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "Mobile", "Email", "City", "State"]).drop_duplicates()
+    
+    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "City", "State"]).drop_duplicates()
         
     # Save updated file
     filename = f"honda_showrooms_{today}.csv"
