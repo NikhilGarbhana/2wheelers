@@ -35,7 +35,14 @@ options.add_argument("--start-maximized")
 options.add_argument("user-agent=Mozilla/5.0")
 
 # Optional: Disable image loading (better done via prefs)
-prefs = {"profile.managed_default_content_settings.images": 2}
+# prefs = {"profile.managed_default_content_settings.images": 2}
+# options.add_experimental_option("prefs", prefs)
+
+prefs = {
+  "profile.managed_default_content_settings.images": 2,
+  "profile.default_content_setting_values.notifications": 2,
+  "profile.default_content_setting_values.geolocation": 2
+}
 options.add_experimental_option("prefs", prefs)
 
 ###------------------ VARIABLES SECTION ------------------###
@@ -48,6 +55,8 @@ url = "https://www.tvsmotor.com/tvs-dealer-locator/tvs-2-wheeler"
 # Store showroom data"
 data = []
 state_cities = {}
+
+finished_places = []
 
 # Constants
 MAX_RETRIES = 2  # Number of retries per pincode
@@ -98,7 +107,7 @@ def search(wait, option_city):
     time.sleep(3)
 
 # Function to scrape dealer details
-def scrape_dealers(driver):
+def scrape_dealers(driver, city, state):
     """Extracts dealer details from the page source."""
     soup = BeautifulSoup(driver.page_source, "html.parser")
     dealers = []
@@ -112,72 +121,61 @@ def scrape_dealers(driver):
             phone = showroom.find("div", class_="latlong-list-phonenumber")
             email = showroom.find("div", class_="email-contact")
             
-            dealers.append([
-                name.text.strip() if name else "",
-                address.text.strip() if address else "",
-                phone.text.strip() if phone else "",
-                email.text.strip() if email else ""
-            ])
+            dealers.append([name.text.strip() if name else "", address.text.strip() if address else "", phone.text.strip() if phone else "", email.text.strip() if email else "", city, state])
     
     # if not dealers:
     #     print("[WARNING] No dealers found, might be a loading issue.")
-    
+    # print(dealers)
     return dealers
-    
+
 def main():
     cities()
-    # print(state_cities)
-    
     driver, wait = start_browser()
-    
-    for option_state in state_cities.keys():
+    for option_state in list(state_cities.keys())[24:37]:
         for k,option_city in enumerate(state_cities[option_state]):
-            if k > 0 and k % RESTART_BROWSER_AFTER == 0:
-                # print("[INFO] Restarting browser to free memory...")
-                driver.quit()
-                # time.sleep(5)
-                driver, wait = start_browser()
-            # print(f"🔍 Scraping data for {option_city}...")
+        # for k,option_city in list(enumerate(state_cities[option_state]))[:2]:
             retry_count_city = 0
             while retry_count_city < MAX_RETRIES:
                 try:
-                    serach_text = option_city# + ", " + option_state
-                    search(wait, serach_text)
+                    search(wait, option_city)
                     list_items = wait.until(EC.presence_of_all_elements_located((By.CLASS_NAME, 'latlong-leaflet-autocomplete-li')))
                     temp = [li.text for li in list_items]
                     # print(temp)
                     for j in range(len(temp)):
-                        if j > 0 and j % RESTART_BROWSER_AFTER == 0:
-                            print("[INFO] Restarting browser to free memory...")
-                            driver.quit()
-                            # time.sleep(5)
-                            driver, wait = start_browser()
                         retry_count_place = 0
-                        while retry_count_place < MAX_RETRIES:
-                            try:
-                                search(wait, temp[j])
-                                ele = driver.find_element(By.CLASS_NAME, 'latlong-leaflet-autocomplete-li')
-                                ele.click()
-                                time.sleep(2)
-                                # Scrape dealers (you may want to call the scrape_dealers function here)
-                                dealers = scrape_dealers(driver)
-                                data.extend(dealers)
-                                break
-                            except Exception as e:
-                                # retry_count_place += 1
-                                # print(f"⚠️ Error clicking {temp[j]} for {option_city}")
-                                break
+                        if temp[j] not in finished_places:
+                            while retry_count_place < MAX_RETRIES:
+                                try:
+                                    search(wait, temp[j])
+                                    ele = driver.find_element(By.CLASS_NAME, 'latlong-leaflet-autocomplete-li')
+                                    ele.click()
+                                    time.sleep(2)
+                                    # Scrape dealers (you may want to call the scrape_dealers function here)
+                                    dealers = scrape_dealers(driver, option_city, option_state)
+                                    data.extend(dealers)
+                                    finished_places.append(temp[j])
+                                    break
+                                except:
+                                    # break
+                                    retry_count_place += 1
+                                    driver.refresh()
+                                    time.sleep(3)
+                                    if retry_count_place == MAX_RETRIES:
+                                        # print(f"⏩ Skipping {option_city} due to multiple failures.")
+                                        break
                     break
                 except:
+                    # break
                     retry_count_city += 1
+                    driver.refresh()
+                    time.sleep(3)
                     if retry_count_city == MAX_RETRIES:
                         # print(f"⏩ Skipping {option_city} due to multiple failures.")
                         break
-    driver.quit()
 
 if __name__ == "__main__":
     main()
     ###------------------ DATA SAVING SECTION ------------------###
-    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "Mail"]).drop_duplicates()
-    filename = f"tvs_showrooms_{today}.csv"
+    df = pd.DataFrame(data, columns=["Showroom Name", "Address", "Phone", "Mail", "City", "State"]).drop_duplicates()
+    filename = f"tvs_showrooms_3_{today}.csv"
     df.to_csv(filename, index=False)
