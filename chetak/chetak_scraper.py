@@ -78,6 +78,7 @@ def extract_pincode(address):
   
 def cities():
     driver = webdriver.Chrome(service=Service(), options=options)
+    driver.maximize_window()
     driver.get(url_cities)  # change to your URL
 
     # Wait for dropdown to be present
