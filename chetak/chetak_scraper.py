@@ -89,9 +89,15 @@ def cities():
     #     try:
     # Get all dropdowns by role (they appear in order: 0=Sort, 1=State, 2=City)
     dropdowns = wait.until(EC.presence_of_all_elements_located((By.XPATH, "//div[@role='button' and @aria-haspopup='listbox']")))
+    # //*[@id="demo-customized-select"]
+    # //*[@id="demo-simple-select-filled"]
     
     state_dropdown = dropdowns[1]  # Second dropdown = state
-    city_dropdown = dropdowns[2]   # Third dropdown = city
+    # city_dropdown = dropdowns[2]   # Third dropdown = city
+    
+    # state_dropdown = wait.until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="drawerId"]/div/div/div[1]/div[1]/div/div/div[2]/div')))
+    city_dropdown = wait.until(EC.presence_of_all_elements_located((By.XPATH, '//*[@id="drawerId"]/div/div/div[1]/div[1]/div/div/div[3]/div')))
+    
     # Step 1: Open state dropdown
     state_dropdown.click()
     # time.sleep(2)
@@ -147,7 +153,7 @@ def scrape_dealers(city, driver):
     if showroom_list:
         showrooms = showroom_list.find_all("div", class_="dealer-location-card")
         for showroom in showrooms:
-            name = showroom.find("h4", class_="dealer-location-card__title").text
+            name = showroom.find("p", class_="dealer-location-card__title").text
             address = showroom.find("p", class_="dealer-location-card__address").text
             email = showroom.find("a", class_="dealer-location-card__email").text
             phone = showroom.find("a", class_="dealer-location-card__phone").text
@@ -215,7 +221,7 @@ def main():
 
     for state in state_to_cities.keys():
         for i, city in enumerate(state_to_cities[state]):
-            value = city + ", " + state + ", India"
+            value = city.strip() + ", " + state + ", India"
             print(value)
             retry_count = 0
             while retry_count < MAX_RETRIES:
@@ -227,16 +233,20 @@ def main():
                     
                     dealers = scrape_dealers(city, driver)
                     data.extend(dealers)
+                    print(dealers)
                     print(f"✅ Success: {city}")
                     break
                 except Exception as e:
                     retry_count += 1
-                    # print(e)
+                    print(e)
+                    # try:
+                    #     wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="info-modal"]/div/div/button'))).click
+                    # except:
+                    #     pass
                     if retry_count == MAX_RETRIES:
                         break
                     if "interactable" in str(e):
-                        close_button = wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@class="btn-close position-absolute top-0 end-0 m-3 close-btn"]')))
-                        close_button.click()
+                        wait.until(EC.element_to_be_clickable((By.XPATH, '//*[@id="info-modal"]/div/div/button'))).click()
 
     driver.quit()
 
