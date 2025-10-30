@@ -231,6 +231,7 @@ OUTPUT_FILE = "hero_dealers.csv"
 
 options = webdriver.ChromeOptions()
 options.add_argument("--start-maximized")
+options.add_argument("--headless=new")  # Correct syntax for headless
 options.add_argument("--disable-notifications")
 options.add_argument("--disable-blink-features=AutomationControlled")
 options.add_argument("--no-sandbox")
