@@ -27,7 +27,7 @@ import tempfile
 
 # Setup Chrome WebDriver - Configure Selenium to use Chrome
 options = Options()
-options.add_argument("--headless=new")  # Correct syntax for headless
+# options.add_argument("--headless=new")  # Correct syntax for headless
 options.add_argument("--disable-popup-blocking")
 options.add_argument("--disable-gpu")
 options.add_argument("--no-sandbox")
